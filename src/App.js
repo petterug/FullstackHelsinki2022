@@ -1,16 +1,44 @@
 import { useState, useEffect } from 'react'
 
 const Button = ({onClick, text}) => (
-  <div>
+  <>
     <button onClick={onClick}>{text}</button>
-  </div>
+  </>
 )
 
 const Votes = ({points, selected}) => {
-  console.log(points[selected])
   return (
     <>
       <div>Has {points[selected]} votes</div>
+    </>
+  )
+}
+
+const DailyAnecdote = ({anecdote}) => {
+  return (
+    <>
+    <h1>Anecdote of the day</h1>
+    <div>{anecdote}</div>
+    </>
+  )
+}
+
+const MostVotes = ({points, selected, anecdotes}) => {
+
+
+  const max = Math.max(...points)
+  const index = points.indexOf(max)
+
+  if(max === 0) {
+    return (
+    <>
+    </>
+    )
+  }
+  return (
+    <>
+    <h1>Anecdote with most votes</h1>
+    <div>{anecdotes[index]}</div>
     </>
   )
 }
@@ -27,37 +55,28 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients'
   ]
-
-  const [points, setScore] = useState(Array(anecdotes.length).fill(0))
-  const [selected, setSelected] = useState(0)
   const max = anecdotes.length
-
-  // useEffect(()=>{
-  //   for(let i = 0; i < max; i++) {
-  //     points[i] = 0;
-  //   }
-  // }, [])
-    
-
-
+  const [points, setScore] = useState(Array(max).fill(0))
+  const [selected, setSelected] = useState(Math.floor(Math.random()*max))
+ 
   const nextAnecdote = () => {
     
     setSelected(Math.floor(Math.random()*max))
   }
 
   const increaseVote = () => {
-    const copy = {...points}
+    let copy = [...points]
     copy[selected] += 1
-
     setScore(copy)
   }
 
   return (
     <div>
-      {anecdotes[selected]}
+      <DailyAnecdote anecdote={anecdotes[selected]} />
       <Votes points={points} selected={selected}/>
       <Button onClick={increaseVote} text={'vote'} />
       <Button onClick={nextAnecdote} text={'Next anecdote'} />
+      <MostVotes points={points} selected={selected} anecdotes={anecdotes} />
       
     </div>
   )
