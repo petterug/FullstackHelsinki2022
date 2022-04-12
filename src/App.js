@@ -4,35 +4,47 @@ const People = ({ names }) => {
   console.log(names);
   return (
     <div>
-      {names.map(name => <div key={name.name} > {name.name} </div>)}
+      {names.map(name => <div key={name.name} > {name.name} {name.number} </div>)}
     </div>
   )
 }
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '92391563' }
   ]) 
   const [newName, setNewName] = useState('enter name..')
+  const [newNumber, setNewNumber] = useState('enter number..')
 
   const addName = (event) => {
     event.preventDefault()
+
+    if(newName === '') {
+      return alert('Please enter a name')
+    }
 
     if( persons.findIndex((element) => element.name == newName) !== -1) {
       return alert(`${newName} is already added to the phonebook`)
     }
 
     const newPerson = {
-      name: newName
+      name: newName,
+      number: newNumber
     }
     
     setPersons(persons.concat(newPerson))
     setNewName('')
+    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
     
     setNewName(event.target.value)
+
+  }
+  const handleNumberChange = (event) => {
+    
+    setNewNumber(event.target.value)
 
   }
 
@@ -42,6 +54,9 @@ const App = () => {
       <form onSubmit={addName}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange}/>
         </div>
         <div>
           <button type="submit">add</button>
