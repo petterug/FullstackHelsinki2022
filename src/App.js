@@ -7,6 +7,7 @@ import Countries from './components/Countries'
 const App = () => {
   const [countries, setCountries] = useState([]) 
   const [searchFilter, setSearchFilter] = useState('')
+  const [selectCountry, setCountry] = useState({})
 
   useEffect(() => {
     axios
@@ -22,10 +23,11 @@ const App = () => {
     setSearchFilter(event.target.value)
   }
 
+
   return (
     <div>
       <Filter value={searchFilter} searchChange={handleSearchChange}  />
-      <Countries countries={countries} searchFilter={searchFilter}/>
+      <Countries countries={countries} searchFilter={searchFilter} setSearch={setSearchFilter} />
     </div>
   )
 }

@@ -1,7 +1,6 @@
 const Country = ({ country }) => {
 
     const langs = Object.values(country.languages)
-
     return (
         <div>
             <h1>{country.name.common}</h1>
@@ -11,7 +10,7 @@ const Country = ({ country }) => {
             </div>
             <div>
                 <ul>
-                    {langs.map(lang => <li>{lang}</li>)}
+                    {langs.map(lang => <li key={lang} >{lang}</li>)}
                 </ul>
             </div>
             <div>

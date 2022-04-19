@@ -1,11 +1,9 @@
 import Country from './Country'
 
-const Countries = ({ countries, searchFilter }) => {
-    
-    const countriesToShow = searchFilter ? countries.filter(country => country.name.common.toLowerCase().includes(searchFilter.toLowerCase())) : countries
-    
+const Countries = ({ countries, searchFilter, setSearch}) => {
+  const countriesToShow = searchFilter ? countries.filter(country => country.name.common.toLowerCase().includes(searchFilter.toLowerCase())) : countries
+  
 
-    
   if(countriesToShow.length > 10) {
     return(
       <div>
@@ -21,7 +19,7 @@ const Countries = ({ countries, searchFilter }) => {
   }
   return (
     <div>
-      {countriesToShow.map(country => <div key={country.latlng} > {country.name.common} </div>)}
+      {countriesToShow.map(country => <div key={country.latlng} > {country.name.common} <button onClick={() => setSearch(country.name.common)}>show</button> </div>)}
     </div>
     )
   }
