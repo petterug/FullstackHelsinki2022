@@ -7,29 +7,19 @@ const Country = ({ country }) => {
     const apiKey = process.env.REACT_APP_OPEN_WEATHER
     const lat = country.latlng[0]
     const lon = country.latlng[1]
-    let temp = -999
-    let wind = -999
-    let icon = '10n'
     
-
     useEffect(() => {
         axios
             .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
             .then(response => {
             setWeather(response.data)
-            console.log('fires once');
+            console.log("I fire once?");
             })
             .catch(err => console.log(err))
-    
         }, [])
     
     const langs = Object.values(country.languages)
 
-    if(weather !== undefined) {
-        temp = weather.main.temp
-        wind = weather.wind
-        icon = weather.weather.icon 
-    }
 
     return (
         <div>
@@ -47,13 +37,29 @@ const Country = ({ country }) => {
                 <img src={country.flags.png} alt={country.name.common} />
             </div>
             <div>
-                <h1>Weather in {country.name.common}</h1>
-                <p>temperature {temp} Celsius</p>
-                <img src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt="" />
-                <p>wind {wind} m/s</p>
+            {Object.keys(weather).length > 0 &&
+                <div>
+                    <h1>Weather in {country.capital[0]}</h1>
+                    <p>temperature {weather.main.temp} Celsius</p>
+                    <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="" />
+                    <p>wind {weather.wind.speed} m/s</p>
+                </div>
+                }
             </div>
         </div>
     )
 }
 
+
 export default Country
+/*
+        {Object.keys(weather).length > 0 &&
+        <div>
+            <h1>Weather in {country.name.common}</h1>
+            <p>temperature {console.log(weather)} Celsius</p>
+            <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="" />
+            <p>wind {weather.wind} m/s</p>
+        </div>
+        }
+*/
+
