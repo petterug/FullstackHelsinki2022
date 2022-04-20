@@ -3,18 +3,7 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
-
-// const People = ({ names, searchFilter }) => {
-
-//   const peopleToShow = searchFilter ? names.filter(name => name.name.toLowerCase().includes(searchFilter.toLowerCase())) : names
-
-//   return (
-//     <div>
-//       <h2>Numbers</h2>
-//       {peopleToShow.map(name => <div key={name.name} > {name.name} {name.number} </div>)}
-//     </div>
-//   )
-// }
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -23,13 +12,12 @@ const App = () => {
   const [searchFilter, setSearchFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
         setPersons(response.data)
       })
-
-  })
+  }, [])
 
   const addName = (event) => {
     event.preventDefault()
@@ -47,9 +35,13 @@ const App = () => {
       number: newNumber
     }
     
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
+    personService
+      .create(newPerson)
+      .then(response => {
+        setPersons(persons.concat(newPerson))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = (event) => {    
