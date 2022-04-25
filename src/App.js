@@ -26,23 +26,33 @@ const App = () => {
       return alert('Please enter a name')
     }
 
-    if( persons.findIndex((element) => element.name == newName) !== -1) {
-      return alert(`${newName} is already added to the phonebook`)
-    }
+    const personIndex = persons.findIndex((element) => element.name == newName)
 
-    const newPerson = {
-      name: newName,
-      number: newNumber
+    if( personIndex !== -1) {
+      const updatePerson = {...persons[personIndex], number: newNumber}
+      if(window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+       personService
+        .update(updatePerson.id, updatePerson)
+        .then(response => {
+          setPersons(persons.map(person => person.id != persons[personIndex].id ? person : response.data))
+        })
+        console.log('updated');
+      } else {console.log('cancelled')}
+    } else {
+
+      const newPerson = {
+        name: newName,
+        number: newNumber
+      }
+      personService
+        .create(newPerson)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('')
+          setNewNumber('')
+        })
     }
-    personService
-      .create(newPerson)
-      .then(response => {
-        setPersons(persons.concat(response.data))
-        setNewName('')
-        setNewNumber('')
-      })
-    console.log(persons);
-  }
+}
 
   const deletePerson = (prop) => {
     if(window.confirm(`Delete ${prop.name}?`)) {
