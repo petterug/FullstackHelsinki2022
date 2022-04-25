@@ -6,7 +6,7 @@ const Persons = ({ names, searchFilter, deletePerson }) => {
   
     return (
       <div>
-        {peopleToShow.map(name => <div key={name.name}>{name.name} {name.number}<Button text={'delete'} person={name} onClick={deletePerson} /> </div>)}
+        {peopleToShow.map(name => <div className='list' key={name.name}>{name.name} {name.number}<Button text={'delete'} person={name} onClick={deletePerson} /> </div>)}
       </div>
     )
   }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import personService from './services/persons'
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('enter name..')
   const [newNumber, setNewNumber] = useState('enter number..')
   const [searchFilter, setSearchFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -52,6 +54,10 @@ const App = () => {
           setNewNumber('')
         })
     }
+    setMessage(`success, ${newName}`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 2000)
 }
 
   const deletePerson = (prop) => {
@@ -62,6 +68,12 @@ const App = () => {
           const people = persons.filter((person) => person.id !== prop.id)
           setPersons(people)
         })
+        .catch(
+          setMessage(`error, ${prop.name}`),
+          setTimeout(() => {
+            setMessage(null)
+          }, 2000)
+        )
     }
   }
 
@@ -78,6 +90,7 @@ const App = () => {
   return (
     <div>
       <h3>Phonebook</h3>
+      <Notification message={message}/> 
       <Filter searchFilter={searchFilter} searchChange={handleSearchChange} />
       <h3>Add new person</h3>
       <PersonForm name={newName} number={newNumber} addName={addName} nameChange={handleNameChange} numberChange={handleNumberChange}/>
