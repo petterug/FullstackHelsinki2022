@@ -34,14 +34,25 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    
     personService
       .create(newPerson)
       .then(response => {
-        setPersons(persons.concat(newPerson))
+        setPersons(persons.concat(response.data))
         setNewName('')
         setNewNumber('')
       })
+    console.log(persons);
+  }
+
+  const deletePerson = (prop) => {
+    if(window.confirm(`Delete ${prop.name}?`)) {
+      personService
+        .deletePerson(prop.id)
+        .then(() => {
+          const people = persons.filter((person) => person.id !== prop.id)
+          setPersons(people)
+        })
+    }
   }
 
   const handleNameChange = (event) => {    
@@ -61,7 +72,7 @@ const App = () => {
       <h3>Add new person</h3>
       <PersonForm name={newName} number={newNumber} addName={addName} nameChange={handleNameChange} numberChange={handleNumberChange}/>
       <h3>Numbers</h3>
-      <Persons names={persons} searchFilter={searchFilter} />
+      <Persons names={persons} searchFilter={searchFilter} deletePerson={deletePerson} />
     </div>
   )
 }

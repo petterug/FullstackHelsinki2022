@@ -1,11 +1,12 @@
+import Button from './Button'
 
-const Persons = ({ names, searchFilter }) => {
+const Persons = ({ names, searchFilter, deletePerson }) => {
 
     const peopleToShow = searchFilter ? names.filter(name => name.name.toLowerCase().includes(searchFilter.toLowerCase())) : names
   
     return (
       <div>
-        {peopleToShow.map(name => <div key={name.name} > {name.name} {name.number} </div>)}
+        {peopleToShow.map(name => <div key={name.name}>{name.name} {name.number}<Button text={'delete'} person={name} onClick={deletePerson} /> </div>)}
       </div>
     )
   }
