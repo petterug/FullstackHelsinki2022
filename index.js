@@ -1,9 +1,14 @@
 const express = require('express')
+const { json } = require('express/lib/response')
 const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
-app.use(morgan('tiny'))
+
+morgan.token('body', (request, response) => {return JSON.stringify(request.body)})
+
+app.use(morgan(':method :url :response-time :body'))
+
 
 let persons = [
     { 
@@ -33,7 +38,7 @@ let persons = [
       }
 ]
 
-const dateTime = new Date(Date.now())
+
 
 app.get('/', (request, response) => {
     response.send('<h1>Landing page lol</h1>')
@@ -60,13 +65,12 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-
     if(Object.keys(request.body).length === 0) {
         return response.status(400).json({
             error: 'missing content'
         })
     }
-    const person = request.body
+    const person = {...request.body}
 
     if(!person.name)
         return response.status(401).json({ error: 'missing name' })
@@ -77,7 +81,6 @@ app.post('/api/persons', (request, response) => {
     if(persons.find(el => el.name === person.name)) 
         return response.status(403).json({ error:"name must be unique"})
     
-
     person.id = Math.floor(Math.random() * 10000)
     persons = persons.concat(person)
 
@@ -86,6 +89,8 @@ app.post('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
+    const dateTime = new Date(Date.now())
+    
     response.send(
         `<div>
             Phonebook has info for ${persons.length} people
