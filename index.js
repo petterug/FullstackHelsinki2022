@@ -44,9 +44,9 @@ let persons = [
 
 
 
-// app.get('/', (request, response) => {
-//     response.send('<h1>Landing page lol</h1>')
-// })
+app.get('/', (request, response) => {
+    response.send('<h1>Landing page lol</h1>')
+})
 
 app.get('/api/persons', (request, response) => {
     response.json(persons)
