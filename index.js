@@ -1,7 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const { json } = require('express/lib/response')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
+const { default: mongoose } = require('mongoose')
 
 const app = express()
 
@@ -12,7 +15,6 @@ app.use(cors())
 morgan.token('body', (request, response) => {return JSON.stringify(request.body)})
 
 app.use(morgan(':method :url :response-time :body'))
-
 
 let persons = [
     {
@@ -42,14 +44,14 @@ let persons = [
       }
 ]
 
-
-
 app.get('/', (request, response) => {
     response.send('<h1>Landing page lol</h1>')
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -85,11 +87,18 @@ app.post('/api/persons', (request, response) => {
     if(persons.find(el => el.name === person.name))
         return response.status(403).json({ error:"name must be unique"})
 
-    person.id = Math.floor(Math.random() * 10000)
-    persons = persons.concat(person)
+    // Person.find({}).then(persons => {
+        
+    // })
+    const insert = new Person({
+        name: person.name,
+        number: person.number,
+    })
 
-    response.json(person)
-
+    insert.save().then(result => {
+        console.log(`${insert.name} saved`)
+        response.json(person)
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -97,7 +106,7 @@ app.get('/info', (request, response) => {
 
     response.send(
         `<div>
-            Phonebook has info for ${persons.length} people
+            Phonebook has info for ${Person.length} people
         </div>
         <div>
             ${dateTime}
@@ -106,7 +115,7 @@ app.get('/info', (request, response) => {
     )
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
