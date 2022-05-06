@@ -55,19 +55,33 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if(person)
-        response.json(person)
-    else
-        response.send(`<div>No person with id of ${id}</div>`)
+    Person.findById(request.params.id)
+        .then(person => {
+            if(person) {
+                response.json(person)
+            } else {
+            response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            response.status(500).end()
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-
-    response.status(204).end()
+    Person.findByIdAndDelete(request.params.id)
+    .then(person => {
+        if(person) {
+            response.json(person)
+        } else {
+        response.status(404).end()
+        }
+    })
+    .catch(error => {
+        console.log(error)
+        response.status(500).end()
+    })
 })
 
 app.post('/api/persons', (request, response) => {
@@ -84,9 +98,12 @@ app.post('/api/persons', (request, response) => {
     if(!person.number)
         return response.status(402).json({ error: 'missing number' })
 
-    if(persons.find(el => el.name === person.name))
-        return response.status(403).json({ error:"name must be unique"})
+    // if(persons.find(el => el.name === person.name))
+    //     return response.status(403).json({ error:"name must be unique"})
 
+    if(Person.findOne({ name: person.name}) !== null)
+        return response.status(403).json({ error:"name must be unique"})
+        
     // Person.find({}).then(persons => {
         
     // })
