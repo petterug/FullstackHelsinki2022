@@ -18,6 +18,8 @@ const errorHandler = (error, request, response, next) => {
 
     if(error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
 
     next(error)
@@ -63,49 +65,49 @@ app.delete('/api/persons/:id', (request, response, next) => {
     
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
     const person = {...request.body}
     console.log(person)
-    Person.findByIdAndUpdate(person.id, person, {new: true})
+    Person.findByIdAndUpdate(person.id, person, {new: true, runValidators: true, context: 'query'})
     .then(updatedNote => {
         response.json(updatedNote)
     })
+    .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     if(Object.keys(request.body).length === 0) {
         return response.status(400).json({
             error: 'missing content'
         })
     }
     const person = {...request.body}
-
+    
     if(!person.name)
-        return response.status(401).json({ error: 'missing name' })
-
+    return response.status(401).json({ error: 'missing name' })
+    
     if(!person.number){
         console.log("test")
         return response.status(402).json({ error: 'missing number' })
     }
-   /* if(person.find(el => el.name === person.name))
-        return response.status(403).json({ error:"name must be unique"})
-*/
-    Person.find({}).then(persons => {
-        persons.forEach(el => {
-            if(el.name === person.name) {
-                return response.status(403).json({ error:"name must be unique"})
-            }
-        })
-    })
     const insert = new Person({
         name: person.name,
         number: person.number,
     })
-    console.log("test");
     insert.save().then(result => {
         console.log(`${insert.name} saved`)
         response.json(person)
-    })
+    }).catch(error => next(error))
+    //    if(person.find(el => el.name === person.name))
+    //         return response.status(403).json({ error:"name must be unique"})
+    
+    //     Person.find({}).then(persons => {
+    //         persons.forEach(el => {
+    //             if(el.name === person.name) {
+    //                 return response.status(403).json({ error:"name must be unique"})
+    //             }
+    //         })
+    //     })
 })
 
 app.get('/info', (request, response) => {
