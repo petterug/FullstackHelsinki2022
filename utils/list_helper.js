@@ -8,8 +8,14 @@ const totalLikes = (blogs) => {
     : blogs.reduce((accumulator, blog) => accumulator + blog.likes, 0)
 }
 
+const favoriteBlog = (blogs) => {
+    const mostNumberOfLikes = blogs.reduce((accumulator, blog) => Math.max(accumulator, blog.likes), 0)
+    return blogs.filter(blog => blog.likes === mostNumberOfLikes)[0]
+}
+
 
 module.exports = {
     dummy,
-    totalLikes
+    totalLikes,
+    favoriteBlog
 }
