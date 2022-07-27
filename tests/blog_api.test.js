@@ -68,6 +68,18 @@ test('creating blog without "likes" property defaults to likes: 0', async () => 
     expect(createdBlog[0].likes).toBe(0)
 })
 
+test.only('creating blog without title and URL returns 400 bad request.', async () => {
+    const newBlog = {
+        author: 'Forgetful Sammy',
+        likes: 1
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+})
+
 
 afterAll(() => {
     mongoose.connection.close()
