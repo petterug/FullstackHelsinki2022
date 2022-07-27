@@ -26,17 +26,11 @@ blogRouter.post('/', async (request, response, next) => {
         title: body.title,
         author: body.author,
         url: body.url,
-        likes: body.likes
+        likes: body.likes ? body.likes : 0
     })
 
     const res = await blog.save()
     response.status(201).json(res)
-
-    // blog.save().then(() => {
-    //     console.log(blog.title, 'saved to DB')
-    //     response.status(201).json(blog)
-    // })
-    // .catch(error => next (error))
 })
 
 blogRouter.delete('/:id', (request, response, next) => {

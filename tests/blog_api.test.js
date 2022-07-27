@@ -48,6 +48,26 @@ test('post request creates new entry in DB', async () => {
     expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
 })
 
+test('creating blog without "likes" property defaults to likes: 0', async () => {
+    const newBlog = {
+        title: 'No likes blog',
+        author: 'Nerd',
+        url: 'www.lamo.net'
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    console.log('response body', response.body)
+    const createdBlog = response.body.filter(blog => blog.title === newBlog.title)
+    console.log('created blog', createdBlog[0].likes)
+    expect(createdBlog[0].likes).toBe(0)
+})
+
 
 afterAll(() => {
     mongoose.connection.close()
