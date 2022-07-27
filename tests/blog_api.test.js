@@ -68,7 +68,7 @@ test('creating blog without "likes" property defaults to likes: 0', async () => 
     expect(createdBlog[0].likes).toBe(0)
 })
 
-test.only('creating blog without title and URL returns 400 bad request.', async () => {
+test('creating blog without title and URL returns 400 bad request.', async () => {
     const newBlog = {
         author: 'Forgetful Sammy',
         likes: 1
@@ -78,6 +78,20 @@ test.only('creating blog without title and URL returns 400 bad request.', async 
         .post('/api/blogs')
         .send(newBlog)
         .expect(400)
+})
+
+test('delete request removes blog from DB', async () => {
+    let blogs = await helper.blogsInDB()
+    const toBeDeleted = blogs[0]
+        
+   await api
+        .delete(`/api/blogs/${toBeDeleted.id}`)
+        .expect(200)
+
+    blogs = await helper.blogsInDB()
+    const length = blogs.filter(blog => blog.id === toBeDeleted.id).length
+    expect(length).toBe(0)
+
 })
 
 
