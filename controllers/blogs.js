@@ -18,7 +18,7 @@ blogRouter.get('/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-blogRouter.post('/', (request, response, next) => {
+blogRouter.post('/', async (request, response, next) => {
     console.log('posting')
     const body = {...request.body}
 
@@ -29,11 +29,14 @@ blogRouter.post('/', (request, response, next) => {
         likes: body.likes
     })
 
-    blog.save().then(() => {
-        console.log(blog.title, 'saved to DB')
-        response.json(blog)
-    })
-    .catch(error => next (error))
+    const res = await blog.save()
+    response.status(201).json(res)
+
+    // blog.save().then(() => {
+    //     console.log(blog.title, 'saved to DB')
+    //     response.status(201).json(blog)
+    // })
+    // .catch(error => next (error))
 })
 
 blogRouter.delete('/:id', (request, response, next) => {

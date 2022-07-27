@@ -25,9 +25,27 @@ test('correct number of blogs returned', async () => {
     expect(response.body).toHaveLength(helper.initialBlogs.length)
 })
 
-test.only('returned objects contain unique ID called "id"', async () => {
+test('returned objects contain unique ID called "id"', async () => {
     const response = await api.get('/api/blogs')
     expect(response.body[0].id).toBeDefined()
+})
+
+test('post request creates new entry in DB', async () => {
+    const newBlog = {
+        title: 'Newest blog',
+        author: 'Some guy',
+        url: 'myspace.com/dudebro',
+        likes: 0
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
 })
 
 
