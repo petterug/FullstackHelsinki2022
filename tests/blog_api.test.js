@@ -94,6 +94,19 @@ test('delete request removes blog from DB', async () => {
 
 })
 
+test('patch request updates blog in DB', async () => {
+    const blogs = await helper.blogsInDB()
+    let toBeUpdated = blogs[0]
+
+    const updated = await api
+        .patch(`/api/blogs/${toBeUpdated.id}`)
+        .send({likes: 10})
+        .expect(200)
+
+    console.log('updated is:', updated.body)
+
+    expect(updated.likes).not.toBe(toBeUpdated.likes)
+})
 
 afterAll(() => {
     mongoose.connection.close()
