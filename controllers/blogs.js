@@ -1,6 +1,6 @@
 const blogRouter = require('express').Router()
-const blog = require('../models/blog')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogRouter.get('/', async (request, response) =>{
     const blogs = await Blog.find({})
@@ -52,7 +52,7 @@ blogRouter.patch('/:id', async (request, response, next) => {
     
     try {
         const update = await Blog.findByIdAndUpdate(request.params.id, request.body)
-        
+
         response.status(200).json(update)
     } catch(exception) {
         next(exception)
