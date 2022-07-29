@@ -23,7 +23,6 @@ beforeEach(async () => {
 
 describe('Creating invalid users', () => {
     test('username too short', async () => {
-        const users = await helper.usersInDB()
         const user = {
             username: 'ol',
             name: 'Caroline',
@@ -37,7 +36,6 @@ describe('Creating invalid users', () => {
     })
 
     test('password too short', async () => {
-        const users = await helper.usersInDB()
         const user = {
             username: 'Beers',
             name: 'Caroline',
@@ -51,7 +49,6 @@ describe('Creating invalid users', () => {
     })
 
     test('username not unique', async () => {
-        const users = await helper.usersInDB()
         const user = {
             username: 'root',
             name: 'Caroline',
