@@ -14,8 +14,7 @@ beforeEach( async () => {
     await Promise.all(promiseArray)
 })
 
-test.only('blogs are returned as JSON', async () => {
-
+test('blogs are returned as JSON', async () => {
     await api
         .get('/api/blogs')
         .expect(200)
