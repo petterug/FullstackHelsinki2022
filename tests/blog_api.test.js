@@ -31,55 +31,77 @@ test('returned objects contain unique ID called "id"', async () => {
     expect(response.body[0].id).toBeDefined()
 })
 
-test('post request creates new entry in DB', async () => {
-    const newBlog = {
-        title: 'Newest blog',
-        author: 'Some guy',
-        url: 'myspace.com/dudebro',
-        likes: 0
-    }
+describe('Creating new blog entries', () => {
+    test('post request creates new entry in DB', async () => {
+        const newBlog = {
+            title: 'Newest blog',
+            author: 'Some guy',
+            url: 'myspace.com/dudebro',
+            likes: 0
+        }
 
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+        const response = await api.get('/api/blogs')
+        expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+    })
+
+    test('creating blog without "likes" property defaults to likes: 0', async () => {
+        const newBlog = {
+            title: 'No likes blog',
+            author: 'Nerd',
+            url: 'www.lamo.net'
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const response = await api.get('/api/blogs')
+        console.log('response body', response.body)
+        const createdBlog = response.body.filter(blog => blog.title === newBlog.title)
+        console.log('created blog', createdBlog[0].likes)
+        expect(createdBlog[0].likes).toBe(0)
+    })
+
+    test('creating blog adds a creator-user', async () => {
+        const newBlog = {
+            title: 'No likes blog',
+            author: 'Nerd',
+            url: 'www.lamo.net',
+            likes: 4
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const response = await api.get('/api/blogs')
+        const createdBlog = response.body.filter(blog => blog.title === newBlog.title)
+        expect(createdBlog[0].user).toBeTruthy()
+    })
+
+    test('creating blog without title and URL returns 400 bad request.', async () => {
+        const newBlog = {
+            author: 'Forgetful Sammy',
+            likes: 1
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+    })
 })
 
-test('creating blog without "likes" property defaults to likes: 0', async () => {
-    const newBlog = {
-        title: 'No likes blog',
-        author: 'Nerd',
-        url: 'www.lamo.net'
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-
-    const response = await api.get('/api/blogs')
-    console.log('response body', response.body)
-    const createdBlog = response.body.filter(blog => blog.title === newBlog.title)
-    console.log('created blog', createdBlog[0].likes)
-    expect(createdBlog[0].likes).toBe(0)
-})
-
-test('creating blog without title and URL returns 400 bad request.', async () => {
-    const newBlog = {
-        author: 'Forgetful Sammy',
-        likes: 1
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
-})
 
 test('delete request removes blog from DB', async () => {
     let blogs = await helper.blogsInDB()

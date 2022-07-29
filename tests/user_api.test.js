@@ -34,7 +34,6 @@ describe('Creating invalid users', () => {
             .post('/api/users')
             .send(user)
             .expect(403)
-
     })
 
     test('password too short', async () => {
