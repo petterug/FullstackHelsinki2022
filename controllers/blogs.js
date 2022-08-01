@@ -22,14 +22,9 @@ blogRouter.get('/:id', (request, response, next) => {
 })
 
 blogRouter.post('/', async (request, response, next) => {
-    console.log('posting')
     const body = {...request.body}
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'token missing or invalid' })
-    }
-    const user = await User.findById(decodedToken.id)
+    const user = await User.findById(request.user)
 
     console.log('User found:', user)
 
@@ -61,13 +56,9 @@ blogRouter.delete('/:id', async (request, response, next) => {
 
     //find creator of blog and logged in user
     const creatorId = blog.user.toString()
+    const userId = request.user
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-        return response.status(401).json({ error: 'token missing or invalid' })
-    }
-    const userId = decodedToken.id
-
+    
     // compare the logged in user with the user who is set as creator
     if (userId === creatorId) {
         try {
