@@ -47,5 +47,4 @@ userRouter.post('/', async (request, response, next) => {
     }
 })
 
-
 module.exports = userRouter
