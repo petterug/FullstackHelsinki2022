@@ -1,5 +1,4 @@
 const blogRouter = require('express').Router()
-const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -24,7 +23,7 @@ blogRouter.get('/:id', (request, response, next) => {
 blogRouter.post('/', async (request, response, next) => {
     const body = {...request.body}
 
-    const user = await User.findById(request.user)
+    const user = request.user
 
     console.log('User found:', user)
 
@@ -33,7 +32,7 @@ blogRouter.post('/', async (request, response, next) => {
         author: body.author,
         url: body.url,
         likes: body.likes ? body.likes : 0,
-        user: user.id
+        user: user
     })
 
     try {

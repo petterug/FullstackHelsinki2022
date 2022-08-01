@@ -46,11 +46,14 @@ const tokenExtractor = (request, response, next) => {
 }
 
 const userExtractor = (request, response, next) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token missing or invalid' })
+  //if a jwt was sent with the request
+  if (request.token) {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token missing or invalid' })
+    }
+    request.user = decodedToken.id
   }
-  request.user = decodedToken.id
 
   next()
 }
