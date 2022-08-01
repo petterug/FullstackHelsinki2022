@@ -4,16 +4,6 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 
-// const getTokenFrom = (request) => {
-//     const authorization = request.get('authorization')
-//     console.log('auth', authorization)
-//     if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
-//         return authorization.substring(7)
-//     }
-
-//     return null
-// }
-
 blogRouter.get('/', async (request, response) =>{
     const blogs = await Blog.find({}).populate('user', {username: 1, name: 1, id: 1})
     response.json(blogs)
@@ -35,7 +25,6 @@ blogRouter.post('/', async (request, response, next) => {
     console.log('posting')
     const body = {...request.body}
 
-    //const token = getTokenFrom(request)
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if (!decodedToken.id) {
         return response.status(401).json({ error: 'token missing or invalid' })
@@ -52,7 +41,6 @@ blogRouter.post('/', async (request, response, next) => {
         user: user.id
     })
 
-
     try {
         const res = await blog.save()
         response.status(201).json(res)
@@ -62,11 +50,34 @@ blogRouter.post('/', async (request, response, next) => {
 })
 
 blogRouter.delete('/:id', async (request, response, next) => {
-    try {
-        const blog = await Blog.findByIdAndDelete({ _id: request.params.id })
-        response.status(200).json(blog)
-    } catch(exception) {
-        next(exception)
+
+    // Find blog in database and return it
+    const blog = await Blog.findById({ _id: request.params.id })
+
+    // If no blog with matching ID is found, return error message
+    if(!blog) {
+        return response.status(404).json({ error: 'no blog with matching ID' })
+    }
+
+    //find creator of blog and logged in user
+    const creatorId = blog.user.toString()
+
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token missing or invalid' })
+    }
+    const userId = decodedToken.id
+
+    // compare the logged in user with the user who is set as creator
+    if (userId === creatorId) {
+        try {
+            const deleted = await Blog.deleteOne({ _id: blog.id })
+            return response.status(200).json(deleted)
+        } catch(exception) {
+            next(exception)
+        }
+    } else {
+        return response.status(403).json({ error: 'Unauthorized deletion request'})
     }
 })
 
